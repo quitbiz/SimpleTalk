@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SimpleTalk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        background-color: #f2f2f2;
+      }
+      
+      #chat-container {
+        height: 80vh;
+        max-height: 500px;
+        width: 100%;
+        max-width: 800px;
+        margin: auto;
+        border: 1px solid #ccc;
+        overflow-y: scroll;
+        padding: 20px;
+        background-color:#fff;
+        color: #0000ff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      }
+
+       #message-box {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+      
+      #message-input {
+        height: 40px;
+        width: 80%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 16px;
+      }
+
+       #send-button {
+        height: 40px;
+        width: 18%;
+        border-radius: 5px;
+        background-color: #008CBA;
+        color: #fff;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      #send-button:hover {
+        background-color: #007399;
+      }
+
+      .chat-message {
+        background-color: #f7f7f7;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      
+      .user-message {
+        background-color: #b2e5ff;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        align-self: flex-end;
+      }
+      
+      .chat-message p, .user-message p {
+        margin: 0;
+        font-size: 16px;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div id="chat-container"></div>
+    <div id="message-box">
+      <input id="message-input" type="text" placeholder="Type your message...">
+      <button id="send-button">Chat</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const chatContainer = document.getElementById("chat-container");
+      const messageInput = document.getElementById("message-input");
+      const sendButton = document.getElementById("send-button");
+
+      const socket = io();
+
+      sendButton.onclick = () => {
+        const message = messageInput.value;
+        const chatMessage = document.createElement("div");
+        const userMessage = document.createElement("div");
+        chatMessage.innerText = "";
+        userMessage.innerText = `User: ${message}`;
+        chatContainer.appendChild(userMessage);
+
+        socket.emit("chat message", message);
+
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        messageInput.value = "";
+      };
+
+      socket.on("chat message", (msg) => {
+        const chatMessage = document.createElement("div");
+        chatMessage.innerText = msg;
+        chatContainer.appendChild(chatMessage);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      });
+    </script>
+  </body>
+</html>
